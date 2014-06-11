@@ -22,18 +22,18 @@
 char FOOTPRINT[] = "Voltrinket 0.1.0";
 
 // Delay between each voltage read (ms)
-int delay = 400;
+int delayTime = 400;
 
 
-#include <avr/power.h>
+#include "TrinketFakeUsbSerial.h"
 
 void setup() {
-  // First, set frequency to 16MHz.
-  if (F_CPU == 16000000) clock_prescale_set(clock_div_1);
-
-  //TODO
+  TFUSerial.begin();
+  TFUSerial.println(FOOTPRINT);
 }
 
 void loop() {
-  
+  delay(delayTime);
+  word value = analogRead(1);
+  TFUSerial.write((char[2]) value);
 }

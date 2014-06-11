@@ -20,9 +20,7 @@
 """Voltrinket host reader.
 
 Usage:
-  voltrinket.py [-r | --raw] [-v | --verbose]
-  voltrinket.py (-h | --help)
-  voltrinket.py --version
+  voltrinket.py [options]
 
 Options:
   -r --raw      Print the raw values instead of lectures in Volts (V).
@@ -36,25 +34,14 @@ Options:
 """
 
 from docopt import docopt
-import time, select
+import time, select, sys
 import usb.core, usb.util
-
-# The Trinket is expected to emit that same footprint
-# at start, in order for the program to pick its data.
-FOOTPRINT = "Voltrinket 0.1.0"
-
-if __name__ == '__main__':
-    args = docopt(__doc__, version=FOOTPRINT)
-    try:
-        while True: loop()
-    except InterruptError:
-        print()
 
 def loop():
 
     # 1. Try to find and connect to a Trinket
 
-    if args.verbose:
+    if args["--verbose"]:
         print("Waiting for a Trinket...")
 
     while True:
@@ -62,36 +49,58 @@ def loop():
         if trinket: break
         time.sleep(0.1) # don't hog all CPU
 
-    trinket.setConfiguration()
+    trinket.set_configuration()
+    endpoint = trinket[0][(0,0)][0] # the first endpoint should be the only endpoint, it should be an interrupt-in endpoint
 
-    if args.verbose:
+    if args["--verbose"]:
         print("Connected to a Trinket.")
 
 
     # 2. Check footprint and read the data
 
-    #endpoint = 0x81
-    endpoint = trinket[0][(0,0)][0] # the first endpoint should be the only endpoint, it should be an interrupt-in endpoint
+    if not args["--raw"]:
+        if args["--no-ansi"]:
+            format = "Value: %.3fV"
+        else:
+            format = "\x1b[F\x1b[JValue: %.3fV"
+            print("Value: ------")
 
+    cleared = False
     while True:
-        time.sleep(0.01) # don't hog all CPU
         try:
-            data = trinket.read(endpoint.bEndpointAddress, endpoint.wMaxPacketSize)
-            # TODO
+            # read next line
+            line = bytearray()
+            while True:
+                c = endpoint.read(1)[0]
+                if c == ord('\n'): break
+                line.append(c)
 
-        except Exception as ex:
-            exStr = str(ex).lower()
-
-            # for timeouts: wait a bit, then continue reading
-            if 'timeout' in exStr:
-                time.sleep(0.01)
+            # make sure we have read a full line
+            if not cleared:
+                cleared = True
                 continue
 
-            # any other error: disconnect
-            if not args.silent:
-                print 'USB read error: ', ex
+            # parse the line, output result
+            lecture = int(line)
+
+            if args["--raw"]:
+                print(lecture)
+            else:
+                print(format % (lecture * 5.0 / 1023))
+
+        except usb.core.USBError as ex:
+            if not args["--quiet"]:
+                print('USB read error:', ex)
             break
 
 
-     if args.verbose:
-         print("Disconnected from the Trinket.")
+    if args["--verbose"]:
+        print("Disconnected from the Trinket.")
+
+
+if __name__ == '__main__':
+    args = docopt(__doc__, version="Voltrinket 0.1.0")
+    try:
+        while True: loop()
+    except KeyboardInterrupt:
+        print("")

@@ -29,7 +29,8 @@ Now go on and [use it](#use)!
 
 ## Use
 
-Upload the `voltrinket.ino` sketch to your 5V Trinket.
+[Download](https://github.com/adafruit/Adafruit-Trinket-USB/blob/master/TrinketFakeUsbSerial_allfiles_20140131a.zip?raw=true) the `TrinketUsbFakeSerial` files, extract them and install the Arduino library  
+and upload the `voltrinket.ino` sketch to your 5V Trinket.
 
 Then, when the Trinket boots the sketch, run the python script:
 
