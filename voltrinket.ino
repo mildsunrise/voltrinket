@@ -18,22 +18,18 @@
  * License along with Voltrinket.  If not, see <http://gnu.org/licenses/>
  **/
 
-// Must match with the receiver in order for it to accept the data
-char FOOTPRINT[] = "Voltrinket 0.1.0";
-
 // Delay between each voltage read (ms)
-int delayTime = 400;
+int delayTime = 100;
 
 
 #include "TrinketFakeUsbSerial.h"
 
 void setup() {
   TFUSerial.begin();
-  TFUSerial.println(FOOTPRINT);
 }
 
 void loop() {
   delay(delayTime);
-  word value = analogRead(1);
-  TFUSerial.write((char[2]) value);
+  TFUSerial.println(analogRead(1));
+  TFUSerial.flush();
 }

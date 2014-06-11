@@ -60,10 +60,10 @@ def loop():
 
     if not args["--raw"]:
         if args["--no-ansi"]:
-            format = "Value: %.3fV"
+            format = "Voltage: %.3fV"
         else:
-            format = "\x1b[F\x1b[JValue: %.3fV"
-            print("Value: ------")
+            format = "\x1b[F\x1b[JVoltage: %.3fV"
+            print("Voltage: ------")
 
     cleared = False
     while True:
@@ -99,7 +99,7 @@ def loop():
 
 
 if __name__ == '__main__':
-    args = docopt(__doc__, version="Voltrinket 0.1.0")
+    args = docopt(__doc__, version="Voltrinket 0.1.1")
     try:
         while True: loop()
     except KeyboardInterrupt:
