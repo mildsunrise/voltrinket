@@ -99,7 +99,7 @@ def loop():
 
 
 if __name__ == '__main__':
-    args = docopt(__doc__, version="Voltrinket 0.1.1")
+    args = docopt(__doc__, version="Voltrinket 0.1.2")
     try:
         while True: loop()
     except KeyboardInterrupt:
