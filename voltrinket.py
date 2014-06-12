@@ -52,7 +52,7 @@ def loop():
     trinket.set_configuration()
     endpoint = trinket[0][(0,0)][0] # the first endpoint should be the only endpoint, it should be an interrupt-in endpoint
 
-    if args["--verbose"]:
+    if not args["--quiet"]:
         print("Connected to a Trinket.")
 
 
@@ -89,13 +89,13 @@ def loop():
                 print(format % (lecture * 5.0 / 1023))
 
         except usb.core.USBError as ex:
-            if not args["--quiet"]:
+            if args["--verbose"]:
                 print('USB read error:', ex)
             break
 
 
-    if args["--verbose"]:
-        print("Disconnected from the Trinket.")
+    if not args["--quiet"]:
+        print("Disconnecting from the Trinket.\n")
 
 
 if __name__ == '__main__':
